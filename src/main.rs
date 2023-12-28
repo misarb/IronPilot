@@ -1,68 +1,29 @@
-use std::net::{TcpListener, TcpStream};
-use std::io::{Read, Write};
-
-use libc::{self};
-
-struct ServerHandler {
-    listener: TcpListener,
-    port: u16,
-    client_socket: Option<TcpStream>, // Change type to TcpStream
-    host: [u8; libc::NI_MAXHOST as usize],
-    server: [u8; libc::NI_MAXHOST as usize], // Corrected to libc::NI_MAXSERV
-    buf: [u8; 1024],
-    bytes_recv: isize,
-}
-
-impl ServerHandler {
-    fn new(port: u16) -> Self {
-        let listener = TcpListener::bind(format!("127.0.0.1:{}", port)).expect("Can't Create a Socket!");
-
-        Self {
-            listener,
-            port,
-            client_socket: None, // Initialize with a dummy TcpStream
-            host: [0; libc::NI_MAXHOST as usize],
-            server: [0; libc::NI_MAXHOST as usize],
-            buf: [0; 1024],
-            bytes_recv: 0,
-        }
-    }
-
-    fn accept_connection(&mut self) {
-        if let Ok((stream,_)) = self.listener.accept(){
-
-                self.client_socket = Some(stream);
-
-        const OPTION: &str = r#"
-        Choose from this list :
-        1. calculator
-        2. terminal
-        3. VScode
-        4. home
-        5. firefox
-        6. camera
-        "#;
-        self.send_data(OPTION);
-      }else{
-            println!("Error in accepting connection");
-      }
-    }
-    
-    fn send_data(&mut self, data_to_send: &str) {
-        if let Some(mut stream) = self.client_socket.take() {
-            if let Err(err) = stream.write_all(data_to_send.as_bytes()) {
-                eprintln!("Failed to send data: {}", err);
-            }
-    
-            // Put the TcpStream back into the option
-            self.client_socket = Some(stream);
-        } else {
-            eprintln!("No client connection available to send data");
-        }
-    }
-}
+mod server;
+mod options;
+mod run_command;
+use crate::run_command::RunCommand;
+use crate::server::ServerHandler;
+use std::thread;
 
 fn main() {
-    let mut server = ServerHandler::new(54000);
+    let mut buffer = String::new();
+    let mut server = ServerHandler::init(54000);
     server.accept_connection();
+    loop{
+        server.read_data(&mut buffer);
+        if buffer.trim() == "exit"{
+            break;
+        }
+        let run_command = RunCommand::new();
+        run_command.start(&buffer);
+
+        buffer.clear();
+    }
+    // server.read_data(&mut buffer);
+    // let run_command = RunCommand::new();
+    // run_command.start(&buffer);
+    // // Sleep to allow threads to finish before exiting (optional)
+    // thread::sleep(std::time::Duration::from_secs(2));
+
+
 }
