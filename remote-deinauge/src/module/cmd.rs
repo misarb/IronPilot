@@ -19,6 +19,7 @@ impl RunCmd {
 
     pub fn add_new_cmd(&mut self, cmd_key: &'static str, cmd_value: &'static str) {
         self.cmd_list.insert(cmd_key, cmd_value);
+        println!("New cmd added {cmd_key} : {cmd_value}");
     }
 
     pub fn run_cmd(&self, order: &str) {

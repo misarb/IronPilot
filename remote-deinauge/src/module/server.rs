@@ -3,7 +3,7 @@ use tokio::{
     net::{TcpListener, TcpStream},
 };
 
-use crate::module::OPTION;
+use crate::module::OPTIONS;
 
 pub struct Server {
     client_socket: TcpStream,
@@ -27,10 +27,7 @@ impl Server {
 
     pub async fn read_data(&mut self) {
         let (mut reader, mut writer) = self.client_socket.split();
-        writer
-            .write_all(OPTION.to_string().as_bytes())
-            .await
-            .unwrap();
+        writer.write_all(OPTIONS.to_string().as_bytes()).await.unwrap();
         self.recived_bytes = reader.read(&mut self.buffer).await.unwrap();
     }
 }
