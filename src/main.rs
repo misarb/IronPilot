@@ -1,17 +1,16 @@
-mod server;
 mod options;
 mod run_command;
+mod server;
 use crate::run_command::RunCommand;
 use crate::server::ServerHandler;
-use std::thread;
 
 fn main() {
     let mut buffer = String::new();
     let mut server = ServerHandler::init(54000);
     server.accept_connection();
-    loop{
+    loop {
         server.read_data(&mut buffer);
-        if buffer.trim() == "exit"{
+        if buffer.trim() == "exit" {
             break;
         }
         let run_command = RunCommand::new();
@@ -24,6 +23,4 @@ fn main() {
     // run_command.start(&buffer);
     // // Sleep to allow threads to finish before exiting (optional)
     // thread::sleep(std::time::Duration::from_secs(2));
-
-
 }
