@@ -1,6 +1,12 @@
 mod module;
 use crate::module::RunCmd;
 use crate::module::Server;
+
+// TODO : hundle multi client
+// TODO : add error handling for the rest of methodes
+// refactoring the code
+// use Docker to container this code and run it in the backround
+
 #[warn(unused_imports, unused_variables)]
 #[tokio::main]
 async fn main() {
@@ -20,4 +26,3 @@ async fn main() {
         buffer.clear();
     }
 }
-

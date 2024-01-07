@@ -13,7 +13,7 @@ pub struct Server {
 
 impl Server {
     pub async fn start_server(port: u16) -> Self {
-        let listener = TcpListener::bind(format!("127.0.0.1:{}", port))
+        let listener = TcpListener::bind(format!("0.0.0.0:{}", port))
             .await
             .unwrap();
         let (socket, _) = listener.accept().await.unwrap();
